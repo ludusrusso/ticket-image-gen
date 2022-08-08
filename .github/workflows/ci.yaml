@@ -29,10 +29,10 @@ jobs:
           echo "::set-output name=ts::$(date +%s)"
           echo "::set-output name=sha::$(git rev-parse --short HEAD)"
           echo "::set-output name=branch::$(git rev-parse --abbrev-ref HEAD)"
-      - name: Build Kannon
+      - name: Build Tickets
         uses: ./.github/actions/build-docker
         with:
-          docker-target: kannon
+          docker-target: tickets
           branch: ${{ steps.get_vars.outputs.branch }}
           sha: ${{ steps.get_vars.outputs.sha }}
           ts: ${{ steps.get_vars.outputs.ts }}
