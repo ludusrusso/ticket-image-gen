@@ -1,0 +1,47 @@
+name: "Docker Build"
+description: "Build Docker"
+inputs:
+  docker-target:
+    description: "Docker Target"
+    required: true
+  docker-context:
+    description: "Docker Context Path"
+    required: true
+    default: "."
+  branch:
+    description: "Git Branch"
+    required: true
+  ts:
+    description: "Build Timestamp"
+    required: true
+  sha:
+    description: "Git SHA"
+    required: true
+outputs:
+  digest:
+    description: "Docker Digest"
+    value: ${{ steps.docker_build.outputs.digest }}
+runs:
+  using: "composite"
+  steps:
+    - name: Docker meta
+      id: docker_meta
+      uses: crazy-max/ghaction-docker-meta@v1
+      with:
+        images: |
+          ghcr.io/${{ github.repository }}/${{ inputs.docker-target }}
+        tag-sha: true
+        tag-semver: |
+          {{version}}
+          {{major}}.{{minor}}
+        tag-custom: |
+          ${{inputs.branch}}-${{inputs.sha}}-${{ inputs.ts }}
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        push: ${{ github.ref == 'refs/heads/main' }}
+        network: host
+        tags: ${{ steps.docker_meta.outputs.tags }}
+        target: ${{ inputs.docker-target }}
+        context: ${{ inputs.docker-context }}
