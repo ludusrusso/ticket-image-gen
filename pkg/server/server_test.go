@@ -35,7 +35,7 @@ func TestGenerateImage(t *testing.T) {
 	defer res.Body.Close()
 
 	assert.Equal(t, res.StatusCode, http.StatusOK)
-	assert.Equal(t, "image/jpeg", res.Header.Get("Content-Type"))
+	assert.Equal(t, "image/png", res.Header.Get("Content-Type"))
 
 	_, err := ioutil.ReadAll(res.Body)
 	assert.Nil(t, err)
