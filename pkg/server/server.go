@@ -59,6 +59,7 @@ func buildTicketFromUrl(url *url.URL) (ticket.Ticket, error) {
 	ticketNum := q.Get("ticket")
 	avatar := q.Get("avatar")
 	color := q.Get("color")
+	transparent := q.Get("transparent")
 
 	num, err := strconv.ParseInt(ticketNum, 10, 64)
 	if err != nil {
@@ -79,5 +80,6 @@ func buildTicketFromUrl(url *url.URL) (ticket.Ticket, error) {
 		EventDate:     eventDate,
 		EventHours:    eventTime,
 		Palette:       pl,
+		BgTransparent: transparent != "",
 	}, nil
 }

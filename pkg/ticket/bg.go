@@ -7,8 +7,8 @@ import (
 	"github.com/ludusrusso/ticket-image-gen/pkg/palette"
 )
 
-func prepareBG(dc *gg.Context, p palette.ColorPalette, drawBg bool) error {
-	if drawBg {
+func prepareBG(dc *gg.Context, p palette.ColorPalette, transparent bool) error {
+	if !transparent {
 		dc.DrawRectangle(0, 0, float64(dc.Width()), float64(dc.Height()))
 		dc.SetHexColor(p.V300)
 		dc.Fill()

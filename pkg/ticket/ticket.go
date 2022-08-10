@@ -20,11 +20,12 @@ type Ticket struct {
 	EventDate     string
 	EventHours    string
 	Palette       palette.ColorPalette
+	BgTransparent bool
 }
 
 func (t Ticket) Draw() (*gg.Context, error) {
 	dc := gg.NewContext(1200, 630)
-	prepareBG(dc, t.Palette, true)
+	prepareBG(dc, t.Palette, t.BgTransparent)
 	dc.Translate(150, 65)
 
 	if err := t.drawEvent(dc); err != nil {
