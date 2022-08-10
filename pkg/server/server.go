@@ -3,7 +3,7 @@ package server
 import (
 	"bytes"
 	"context"
-	"image/jpeg"
+	"image/png"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -43,9 +43,9 @@ func handleTicket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "image/jpeg")
+	w.Header().Set("Content-Type", "image/png")
 	buf := new(bytes.Buffer)
-	jpeg.Encode(buf, img.Image(), nil)
+	png.Encode(buf, img.Image())
 	w.Write(buf.Bytes())
 }
 
