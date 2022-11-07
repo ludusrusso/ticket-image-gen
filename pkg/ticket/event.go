@@ -28,7 +28,7 @@ func (t *Ticket) drawEvent(dc *gg.Context) error {
 }
 
 func (t Ticket) drawEventName(dc *gg.Context) error {
-	setFont(dc, fonts.RobotoBlack, 64)
+	setFont(dc, fonts.RobotoBlack, 42)
 	dc.SetHexColor(t.Palette.V600)
 
 	_, h := dc.MeasureString(t.EventName)
