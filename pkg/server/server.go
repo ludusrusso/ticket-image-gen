@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/ludusrusso/ticket-image-gen/pkg/job"
 	"github.com/ludusrusso/ticket-image-gen/pkg/palette"
 	"github.com/ludusrusso/ticket-image-gen/pkg/ticket"
 	"github.com/sirupsen/logrus"
@@ -15,6 +16,7 @@ import (
 
 func Run(ctx context.Context) {
 	http.HandleFunc("/ticket", handleTicket)
+	http.HandleFunc("/job", handleJob)
 
 	logrus.Infof("running server on %s", "http://localhost:8080")
 
@@ -79,6 +81,58 @@ func buildTicketFromUrl(url *url.URL) (ticket.Ticket, error) {
 		EventLocation: eventLoc,
 		EventDate:     eventDate,
 		EventHours:    eventTime,
+		Palette:       pl,
+		BgTransparent: transparent != "",
+	}, nil
+}
+
+func handleJob(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	t, err := buildJobFromUrl(r.URL)
+	if err != nil {
+		logrus.Errorf("error parsing job: %s", err)
+		return
+	}
+
+	img, err := t.Draw()
+	if err != nil {
+		logrus.Errorf("err drawing: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "image/png")
+	buf := new(bytes.Buffer)
+	png.Encode(buf, img.Image())
+	w.Write(buf.Bytes())
+}
+
+func buildJobFromUrl(url *url.URL) (job.Job, error) {
+	q := url.Query()
+	color := q.Get("color")
+	transparent := q.Get("transparent")
+
+	title := q.Get("title")
+	company := q.Get("company")
+	ral := q.Get("ral")
+	location := q.Get("location")
+	jptype := q.Get("type")
+
+	pl, ok := palette.ColorPalettes[color]
+	if !ok {
+		pl = palette.ColorPalettes["pink"]
+	}
+
+	return job.Job{
+		Title:         title,
+		Company:       company,
+		Ral:           ral,
+		Location:      location,
+		Type:          jptype,
 		Palette:       pl,
 		BgTransparent: transparent != "",
 	}, nil
